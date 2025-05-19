@@ -5,7 +5,7 @@ from core import models
 
 class PostModelSerializer(serializers.ModelSerializer):
     username = serializers.SlugRelatedField(
-        source='user',
+        source="user",
         slug_field="username",
         read_only=True,
     )
