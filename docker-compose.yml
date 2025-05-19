@@ -17,6 +17,7 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
+      - DJANGO_SECRET_KEY="SOMETHING-HERE"
     depends_on:
       - db
 
