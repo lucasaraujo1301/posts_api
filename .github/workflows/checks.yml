@@ -39,30 +39,30 @@ jobs:
       - name: Destroy PostgreSQL Service
         run: docker compose down
 
-#  build-pte:
-#    needs: test-lint
-#    name: Build and Push to PTE
-#    if: github.ref == 'refs/heads/develop'
-#    runs-on: ubuntu-20.04
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v4
-#
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v2
-#
-#      - name: Log in to Docker Hub
-#        uses: docker/login-action@v3
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USER }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#
-#      - name: Build and Push
-#        uses: docker/build-push-action@v4
-#        with:
-#          context: .
-#          push: ${{ github.event_name != 'pull_request' }}
-#          tags: |
-#            seguradoraesportiva/sport_insurance_app:tst-api-latest
-#          cache-from: type=registry,ref=seguradoraesportiva/sport_insurance_app:buildcache
-#          cache-to: type=registry,ref=seguradoraesportiva/sport_insurance_app:buildcache,mode=max
+  build:
+    needs: test-lint
+    name: Build and Push to PROD
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: |
+            lucasaraujo1301/posts_api:api-latest
+          cache-from: type=registry,ref=lucasaraujo1301/posts_api:buildcache
+          cache-to: type=registry,ref=lucasaraujo1301/posts_api:buildcache,mode=max
