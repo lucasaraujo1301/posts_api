@@ -16,6 +16,7 @@ class UserManager(BaseUserManager):
 
         :param self: Refer to the class itself
         :param email: Create a new user with the email address provided
+        :param username: Create a new user with the username provided
         :param password: Set the password for the user
         :param **extra_fields: Pass in any additional fields that may be required by the user model
         :return: A user object
@@ -26,7 +27,10 @@ class UserManager(BaseUserManager):
         if not isinstance(email, str):
             raise TypeError("Email must be an string.")
 
-        user = self.model(email=self.normalize_email(email), **extra_fields)
+        username = email.split("@")[0]
+        user = self.model(
+            email=self.normalize_email(email), username=username, **extra_fields
+        )
         user.set_password(password)
         user.save(using=self._db)
 
@@ -49,9 +53,58 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+    username = models.CharField(max_length=50, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
     objects = UserManager()
 
     USERNAME_FIELD = "email"
+
+
+class Post(models.Model):
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_datetime = models.DateTimeField(auto_now_add=True)
+    like_count = models.IntegerField(default=0)
+    comment_count = models.IntegerField(default=0)
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.post.like_count += 1
+        self.post.save()
+
+        return self
+
+    def delete(self, *args, **kwargs):
+        deleted = super().delete(*args, **kwargs)
+        self.post.like_count -= 1
+        self.post.save()
+
+        return deleted
+
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    content = models.TextField()
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.post.comment_count += 1
+        self.post.save()
+
+        return self
+
+    def delete(self, *args, **kwargs):
+        deleted = super().delete(*args, **kwargs)
+        self.post.comment_count -= 1
+        self.post.save()
+
+        return deleted

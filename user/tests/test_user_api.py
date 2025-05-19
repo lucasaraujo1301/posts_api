@@ -4,22 +4,11 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
+from core.tests import helpers
 
-CREATE_USER_URL = reverse("user:create")
-TOKEN_URL = reverse("user:token")
+CREATE_USER_URL = reverse("user:register")
+TOKEN_URL = reverse("user:login")
 ME_URL = reverse("user:me")
-
-
-def create_user(**params):
-    """
-    The create_user function creates a user with the given username, email and password.
-
-
-    :param **params: Pass in a dictionary of parameters to the create_user function
-    :return: A user object
-    :doc-author: Trelent
-    """
-    return get_user_model().objects.create_user(**params)
 
 
 class PublicUserApiTests(TestCase):
@@ -37,7 +26,7 @@ class PublicUserApiTests(TestCase):
 
     def test_create_user_success(self):
         """
-        The test_create_user_success function tests that the create user API endpoint works as expected.
+        The helpers.test_create_user_success function tests that the create user API endpoint works as expected.
         It does this by making a POST request to the CREATE_USER_URL, passing in a payload containing valid data.
         The test then asserts that we get back a 201 response (indicating success), and that the user was created
          correctly.
@@ -77,7 +66,7 @@ class PublicUserApiTests(TestCase):
             "name": "Test Name",
         }
 
-        create_user(**payload)
+        helpers.create_user(**payload)
         res = self.client.post(CREATE_USER_URL, payload)
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -122,7 +111,7 @@ class PublicUserApiTests(TestCase):
             "email": "test@example.com",
             "password": "test123",
         }
-        create_user(**user_details)
+        helpers.create_user(**user_details)
 
         payload = {
             "email": user_details["email"],
@@ -149,7 +138,7 @@ class PublicUserApiTests(TestCase):
             "email": "test@example.com",
             "password": "test123",
         }
-        create_user(**user_details)
+        helpers.create_user(**user_details)
 
         payload = {
             "email": user_details["email"],
@@ -176,7 +165,7 @@ class PublicUserApiTests(TestCase):
             "email": "test@example.com",
             "password": "test123",
         }
-        create_user(**user_details)
+        helpers.create_user(**user_details)
 
         payload = {
             "email": user_details["email"],
@@ -216,7 +205,7 @@ class PrivateUserApiTests(TestCase):
         :return: The user and the client
         :doc-author: Trelent
         """
-        self.user = create_user(
+        self.user = helpers.create_user(
             email="test@example.com", password="testpass123", name="Test Name"
         )
         self.client = APIClient()
@@ -235,7 +224,15 @@ class PrivateUserApiTests(TestCase):
         res = self.client.get(ME_URL)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, {"name": self.user.name, "email": self.user.email})
+        self.assertEqual(
+            res.data,
+            {
+                "name": self.user.name,
+                "email": self.user.email,
+                "username": self.user.username,
+                "id": self.user.id,
+            },
+        )
 
     def test_post_me_not_allowed(self):
         """
@@ -262,12 +259,17 @@ class PrivateUserApiTests(TestCase):
         :return: The user’s updated email, name, and password
         :doc-author: Trelent
         """
-        payload = {"name": "Updated Name", "password": "newpassword123"}
+        payload = {
+            "name": "Updated Name",
+            "password": "newpassword123",
+            "username": "updateUserName",
+        }
 
         res = self.client.patch(ME_URL, payload)
 
         self.user.refresh_from_db()
 
         self.assertEqual(self.user.name, payload["name"])
+        self.assertEqual(self.user.username, payload["username"])
         self.assertTrue(self.user.check_password(payload["password"]))
         self.assertEqual(res.status_code, status.HTTP_200_OK)

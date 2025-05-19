@@ -1,9 +1,8 @@
-from decimal import Decimal
-
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
 from core import models
+from core.tests import helpers
 
 
 class ModelTests(TestCase):
@@ -92,3 +91,70 @@ class ModelTests(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_create_post(self):
+        email = "test@example.com"
+        password = "testpass123"
+        user = get_user_model().objects.create_user(email=email, password=password)
+
+        post = models.Post.objects.create(
+            title="Test Post", content="Test Content", user=user
+        )
+
+        self.assertIsNotNone(post)
+        self.assertEqual(post.user.id, user.id)
+
+    def test_create_like(self):
+        email = "test2@example.com"
+        password = "testpass123"
+        user = helpers.create_user(email=email, password=password)
+        post = helpers.create_post(title="Test Post", content="Test Content")
+
+        like = models.Like.objects.create(post=post, user=user)
+
+        self.assertEqual(like.post.id, post.id)
+        self.assertEqual(post.like_count, 1)
+
+    def test_delete_like(self):
+        email = "test2@example.com"
+        password = "testpass123"
+        user = helpers.create_user(email=email, password=password)
+        post = helpers.create_post(title="Test Post", content="Test Content")
+
+        like = models.Like.objects.create(post=post, user=user)
+
+        self.assertEqual(post.like_count, 1)
+
+        like.delete()
+
+        self.assertEqual(post.like_count, 0)
+
+    def test_create_comment(self):
+        email = "test2@example.com"
+        password = "testpass123"
+        user = helpers.create_user(email=email, password=password)
+        post = helpers.create_post(title="Test Post", content="Test Content")
+
+        comment = models.Comment.objects.create(
+            content="Test Content", user=user, post=post
+        )
+
+        self.assertEqual(comment.post.id, post.id)
+        self.assertEqual(comment.user.id, user.id)
+        self.assertEqual(post.comment_count, 1)
+
+    def test_delete_comment(self):
+        email = "test2@example.com"
+        password = "testpass123"
+        user = helpers.create_user(email=email, password=password)
+        post = helpers.create_post(title="Test Post", content="Test Content")
+
+        comment = models.Comment.objects.create(
+            content="Test Content", user=user, post=post
+        )
+
+        self.assertEqual(post.comment_count, 1)
+
+        comment.delete()
+
+        self.assertEqual(post.comment_count, 0)

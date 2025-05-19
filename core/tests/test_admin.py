@@ -37,6 +37,7 @@ class AdminSiteTests(TestCase):
 
         self.assertContains(res, self.user.name)
         self.assertContains(res, self.user.email)
+        self.assertContains(res, self.user.username)
 
     def test_edit_user_page(self):
         """
@@ -57,6 +58,7 @@ class AdminSiteTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, self.user.email)
         self.assertContains(res, self.user.name)
+        self.assertContains(res, self.user.username)
 
     def test_create_user_page(self):
         """
@@ -81,3 +83,4 @@ class AdminSiteTests(TestCase):
         self.assertContains(res, 'name="is_active"')
         self.assertContains(res, 'name="is_staff"')
         self.assertContains(res, 'name="name"')
+        self.assertContains(res, 'name="username"')

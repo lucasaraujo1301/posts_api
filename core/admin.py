@@ -7,9 +7,9 @@ from core import models
 
 class UserAdmin(BaseUserAdmin):
     ordering = ["id"]
-    list_display = ["email", "name"]
+    list_display = ["email", "name", "username"]
     fieldsets = (
-        (None, {"fields": ("email", "password", "name")}),
+        (None, {"fields": ("email", "password", "name", "username")}),
         (
             _("Permissions"),
             {
@@ -33,6 +33,7 @@ class UserAdmin(BaseUserAdmin):
                     "password1",
                     "password2",
                     "name",
+                    "username",
                     "is_active",
                     "is_staff",
                     "is_superuser",

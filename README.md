@@ -1,13 +1,19 @@
-# Default Django Project
-I created this repository to be my start to my future Django projects that will be used to create APIs and using
-the JWT login.
+# Overview
 
-# About
-As I told before, the only thing you will need is to fork this repository. Follow the steps bellow if you need change something.
+Esse é uma API que cria Posts para um Blog.
 
-# Steps
-If you need to change anything from User Model, be adding new columns, adding to needed groups to the user.
+É possivel dar like e fazer comentários, assim como também
+deletar eles.
 
-Go to `core.models` and change in the `class User` and have fun.
+# Requerimentos
 
-After doing everything, just run the docker container and go create your api.
+Para usar essa API, você só irá precisar ter instalado o Docker.
+
+# Como rodar
+
+```bash
+  docker compose up
+```
+Com isso a API estará rodando no seu localhost na porta 8000.
+
+Para acessar o SWAGGER, entre na url `/api/docs`
