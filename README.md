@@ -17,3 +17,7 @@ Para usar essa API, você só irá precisar ter instalado o Docker.
 Com isso a API estará rodando no seu localhost na porta 8000.
 
 Para acessar o SWAGGER, entre na url `/api/docs`
+
+Use essa URL como teste, caso não queria rodar localmente.
+
+https://slucas.pythonanywhere.com/api/docs/
