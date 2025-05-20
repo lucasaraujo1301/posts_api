@@ -4,16 +4,13 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, Auth
 from rest_framework_simplejwt.tokens import Token
 
 
-class UserSerializer(serializers.ModelSerializer):
+class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ["id", "email", "password", "name", "username"]
+        fields = ["id", "email", "password", "name"]
         read_only_fields = ["id"]
         extra_kwargs = {
             "password": {"write_only": True, "min_length": 5},
-            "username": {
-                "required": False,
-            },
         }
 
     def create(self, validated_data):
@@ -53,6 +50,17 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+
+class UserSerializer(RegisterSerializer):
+    class Meta(RegisterSerializer.Meta):
+        fields = RegisterSerializer.Meta.fields + ["username"]
+        extra_kwargs = {
+            **RegisterSerializer.Meta.extra_kwargs,
+            "username": {
+                "required": False,
+            }
+        }
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
