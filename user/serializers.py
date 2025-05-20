@@ -59,7 +59,7 @@ class UserSerializer(RegisterSerializer):
             **RegisterSerializer.Meta.extra_kwargs,
             "username": {
                 "required": False,
-            }
+            },
         }
 
 
