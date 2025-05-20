@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from psycopg2 import OperationalError as Psycopg2OpError
+from MySQLdb import OperationalError as MySQLdbOpError
 
 from django.core.management import call_command
 from django.db.utils import OperationalError
@@ -43,7 +43,7 @@ class TestCommands(SimpleTestCase):
         :doc-author: Trelent
         """
         patched_check.side_effect = (
-            [Psycopg2OpError] * 2 + [OperationalError] * 3 + [True]
+            [MySQLdbOpError] * 2 + [OperationalError] * 3 + [True]
         )
 
         call_command("wait_for_db")
