@@ -13,6 +13,10 @@ def detail_url(comment_id):
     return reverse("comment:comment-detail", kwargs={"pk": comment_id})
 
 
+def comment_list_by_post_id_url(post_id):
+    return reverse("comment:comment-list-by-post", kwargs={"post_id": post_id})
+
+
 class PublicCommentApiTests(TestCase):
     def setUp(self):
         """
@@ -90,3 +94,11 @@ class PrivateCommentApiTests(TestCase):
 
         post = models.Post.objects.get(pk=self.post.id)
         self.assertEqual(post.comment_count, 0)
+
+    def test_retrieve_comments_by_post_id(self):
+        url = comment_list_by_post_id_url(self.post.id)
+        res = self.client.get(url)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["count"], 1)
+        self.assertEqual(res.data["results"][0]["post"], self.post.id)

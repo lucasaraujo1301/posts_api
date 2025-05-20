@@ -15,23 +15,24 @@ services:
     environment:
       - DB_HOST=db
       - DB_NAME=devdb
-      - DB_USER=devuser
-      - DB_PASS=changeme
+      - DB_USER=root
+      - DB_PASS=root
       - DJANGO_SECRET_KEY="SOMETHING-HERE"
     depends_on:
       - db
 
   db:
-    image: postgres:15.5-alpine
-    volumes:
-      - dev-db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    image: mysql:latest
+    restart: always
     environment:
-      - POSTGRES_DB=devdb
-      - POSTGRES_USER=devuser
-      - POSTGRES_PASSWORD=changeme
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devdb
+      MYSQL_ROOT_USER: root
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
 
 
 volumes:
-  dev-db-data:
+  mysql_data:
