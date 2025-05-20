@@ -14,7 +14,12 @@ class LikeModelViewSet(BaseModelViewSet):
     filter_backends = [filters.SearchFilter]
     search_fields = ["=post_id"]
 
-    @action(detail=False, methods=["get"], url_path="posts/(?P<post_id>[^/.]+)", url_name="list-by-post")
+    @action(
+        detail=False,
+        methods=["get"],
+        url_path="posts/(?P<post_id>[^/.]+)",
+        url_name="list-by-post",
+    )
     def get_likes_by_post_id(self, request, post_id: int):
         queryset = self.get_queryset().filter(post_id=post_id)
         page = self.paginate_queryset(queryset)
